@@ -57,7 +57,7 @@
         circle.style.display = "none";
 
         // YAAD RAKHO: Niche wala IP apne 'hostname -I' se check kar lena
-        fetch('https://veritasproject.onrender.com',{
+        fetch('https://veritasproject.onrender.com/verify',{
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ url: urlInput })
