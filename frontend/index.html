@@ -5,23 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Veritas Project - News Verifier</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 30px; background-color: #f0f2f5; }
-        .container { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 500px; margin: auto; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            text-align: center; 
+            padding: 30px; 
+            background-color: #f0f2f5; 
+        }
+        .container { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 15px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+            max-width: 500px; 
+            margin: auto; 
+        }
         h2 { color: #333; }
-        input { width: 90%; padding: 12px; margin: 20px 0; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; }
+        input { 
+            width: 90%; 
+            padding: 12px; 
+            margin: 20px 0; 
+            border: 2px solid #ddd; 
+            border-radius: 8px; 
+            font-size: 16px; 
+        }
         
-        /* Verify Button Style */
-        .verify-btn { padding: 12px 30px; background-color: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; }
+        /* Action Button Component Styling */
+        .verify-btn { 
+            padding: 12px 30px; 
+            background-color: #007bff; 
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            font-weight: bold; 
+        }
         .verify-btn:hover { background-color: #0056b3; }
 
-        /* Status Indicator (Gola) */
+        /* Dynamic Visual Status Indicator */
         #statusCircle { 
-            width: 80px; height: 80px; border-radius: 50%; 
-            margin: 25px auto; display: none; 
+            width: 80px; 
+            height: 80px; 
+            border-radius: 50%; 
+            margin: 25px auto; 
+            display: none; 
             border: 5px solid #fff;
         }
         
-        /* Red and Green Classes */
+        /* Verification State Classes (Conditional UI Feedback) */
         .red-status { background-color: #ff4d4d; box-shadow: 0 0 20px #ff4d4d; }
         .green-status { background-color: #2ecc71; box-shadow: 0 0 20px #2ecc71; }
         
@@ -42,32 +73,44 @@
     <p id="resultMessage"></p>
 </div>
 
-<script>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+<script>                
+    /**
+     * Extracts user input, performs client-side validation, 
+     * and sends a POST request to the verification API endpoint.
+     */
     function checkNews() {
         const urlInput = document.getElementById('newsUrl').value;
         const circle = document.getElementById('statusCircle');
         const message = document.getElementById('resultMessage');
 
+        // Client-side payload validation
         if (!urlInput) {
-            alert("Bhai, pehle link toh daal do!");
+            alert("Please enter a valid news URL before proceeding.");
             return;
         }
 
+        // Reset UI states before the asynchronous operation begins
         message.innerText = "Checking news sources...";
         circle.style.display = "none";
 
-        // YAAD RAKHO: Niche wala IP apne 'hostname -I' se check kar lena                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-        fetch('https://veritasproject.onrender.com/verify                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ',{
+        // Dispatching asynchronous request to the deployed production backend on Render
+        fetch('https://veritasproject.onrender.com/verify', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ url: urlInput })
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+            return response.json();
+        })
         .then(data => {
+            // Render the API evaluation message and display the status container
             circle.style.display = "block";
             message.innerText = data.message;
             
-            // Backend se aane wale 'color' ke hisaab se class set hogi
+            // Apply corresponding dynamic styling based on backend logic evaluation
             if (data.color === 'green') {
                 circle.className = 'green-status';
             } else {
@@ -75,8 +118,8 @@
             }
         })
         .catch(error => {
-            console.error('Error:', error);
-            message.innerText = "Connection Failed! Is Backend running?";
+            console.error('Fetch Error:', error);
+            message.innerText = "Connection Failed! Please ensure the server is active.";
         });
     }
 </script>
